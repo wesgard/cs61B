@@ -9,7 +9,7 @@ import java.util.Observable;
  */
 public class Model extends Observable {
     /** Current contents of the board. */
-    private Board board;
+    private Board board; // it is a functions? by sun.
     /** Current score. */
     private int score;
     /** Maximum score so far.  Updated when game ends. */
@@ -113,12 +113,30 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        // 1. to combine the single colum.
+        for (int col = 0; col < board.size(); col += 1) {
+            for (int row = 0; row < board.size(); row += 1) {
+                Tile tile = board.tile(col, row);
+                if (board.tile(col, row) != null) {
+                    board.move(col, 3, tile);
+                    changed = true;
+                    score += 0;
+                }
+            }
+        }
+
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+    /** 先考虑单列上的瓦块移动，把for循环写出来
+     * 先不考虑，合并值的问题和其他问题。
+     */
+    private void singleColum(int col) {
+
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -138,6 +156,16 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        // call the Board.size() and Board.tile()
+        // use the for ??
+        int n = b.size();
+        for (int col = 0; col < n; col += 1) {
+            for (int row = 0; row < n; row += 1) {
+                if (b.tile(col, row) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,6 +176,17 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        int MAX_PIECE = 2048;
+        int n = b.size();
+        for (int col = 0; col < n; col += 1) {
+            for (int row = 0; row < n; row += 1) {
+                if (b.tile(col, row) != null) {  // the tile need not null
+                    if (b.tile(col, row).value() == MAX_PIECE) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -159,6 +198,29 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        // if there are null, return true
+        // if there are two tiles behind, the same value.
+        // int col, row;
+        // int core = b.tile(col, row).value();
+        // this is a shit
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+
+        for (int col = 0; col < b.size(); col += 1) {
+            for (int row = 0; row < b.size(); row += 1) {
+                if (col + 1 < b.size()) {
+                    if (b.tile(col, row).value() == b.tile(col + 1, row).value()) {
+                        return true;
+                    }
+                }
+                if (row + 1 < b.size()) {
+                    if (b.tile(col, row).value() == b.tile(col, row + 1).value()) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
